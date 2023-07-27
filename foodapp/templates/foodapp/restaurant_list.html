@@ -1,0 +1,15 @@
+<!-- restaurant_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant List</title>
+</head>
+<body>
+    <h1>Restaurant List</h1>
+    <ul>
+        {% for restaurant in restaurants %}
+            <li><a href="/foodapp/restaurant/{{restaurant.id}}">{{ restaurant.restaurant_name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

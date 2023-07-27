@@ -1,0 +1,15 @@
+<!-- restaurant_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ restaurant.restaurant_name }} Menu</title>
+</head>
+<body>
+    <h1>{{ restaurant.restaurant_name }} Menu</h1>
+    <ul>
+        {% for food in restaurant.food_set.all %}
+            <li>{{ food.food_name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
