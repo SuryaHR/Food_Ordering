@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  {% load static %}
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  </head>
+<body>
+<div class="login-box" style="">
+  <h1>Register Here</h1>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+  <form class="login-form" method="POST">
+  {% csrf_token %}
+  <div class="textbox">
+    <i class="fas fa-user"></i>
+    <label for="id_username">Username:</label>
+    <input type="text" name="username" id="id_username" required>
+  </div>
+
+  <div class="textbox">
+    <i class="fas fa-lock"></i>
+    <label for="id_email">Email:</label>
+    <input type="email" name="email" id="id_email" required>
+  </div>
+
+  <div class="textbox">
+    <i class="fas fa-lock"></i>
+    <label for="id_contact">Contact:</label>
+    <input type="text" name="contact" id="id_contact" required>
+  </div>
+
+  <div class="textbox">
+    <i class="fas fa-lock"></i>
+    <label for="id_password1">Password:</label>
+    <input type="password" name="password1" id="id_password1" required>
+  </div>
+
+  <div class="textbox">
+    <i class="fas fa-lock"></i>
+    <label for="id_password2">Confirm Password:</label>
+    <input type="password" name="password2" id="id_password2" required>
+  </div>
+
+  <br>
+  <div>
+    <input type="submit" class="btn" style="color:white;" value="Register">
+  </div> 
+</form> 
+  <br>
+</div>
+</body>
+</html>
