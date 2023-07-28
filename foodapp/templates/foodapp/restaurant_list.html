@@ -5,6 +5,31 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="{% static 'css/home_style.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/master.css' %}" />
+    <style>
+        .restaurant-card {
+            position: relative;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .restaurant-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .restaurant-name {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 5px;
+            border-radius: 0 0 8px 8px;
+            font-weight: bold;
+        }
+    </style>
     <link href="https://fonts.googleapis.com/css?family=Caveat:700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Bevan&display=swap" rel="stylesheet">
@@ -33,7 +58,7 @@
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item active ml-auto">
-                    <a class="nav-link" id="nav-link" href="">AddRestaurant<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" id="nav-link" href="{% url 'foodapp:add_restaurant' %}">AddRestaurant<span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
@@ -48,17 +73,21 @@
             </ul>
         </div>
     </nav>
-    <main style="width:100%;margin-top: 0;margin-bottom: 10px;background-color:#FFF;">
-        <div class="" style="max-width:100%;padding-top:20px;padding-bottom:20px;">
-            <h1>Restaurant List</h1>
-            {% for restaurant in restaurants %}
-            <div>
-                <a href="{% url 'foodapp:menu_list' restaurant.pk %}">
-                    <img src="{{ restaurant.restaurant_image.url }}" alt="{{ restaurant.restaurant_name }}" style="height: 50%;width: 50%">
-                </a>
-                <h3>{{ restaurant.restaurant_name }}</h3>
+    <main style="width:100%;margin-top: 70px;margin-bottom: 10px;background-color:#FFF;">
+        <div class="container">
+            <h1 class="text-center">Restaurant List</h1>
+            <div class="row">
+                {% for restaurant in restaurants %}
+                <div class="col-md-4 mb-4">
+                    <div class="restaurant-card">
+                        <a href="{% url 'foodapp:menu_list' restaurant.pk %}">
+                            <img src="{{ restaurant.restaurant_image.url }}" alt="{{ restaurant.restaurant_name }}" class="restaurant-image">
+                        </a>
+                        <div class="restaurant-name">{{ restaurant.restaurant_name }}</div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </main>
 </html>

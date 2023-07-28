@@ -3,13 +3,10 @@ from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm
-
+from .forms import LoginForm, RestaurantForm, RegistrationForm
 from django.urls import reverse_lazy
-from .forms import RegistrationForm
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Restaurant, Food
-from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -59,8 +56,16 @@ def registration_view(request):
 
 class AddRestaurant(CreateView):
     model = Restaurant
-    fields = '__all__'
+    form_class = RestaurantForm
+    template_name = 'foodapp/restaurant_form.html'
     success_url = reverse_lazy("foodapp:restaurant_list")
+
+    def form_valid(self, form):
+        # This method is called when the form is valid.
+        # Print the form data in the terminal.
+        print("Received restaurant name:", form.cleaned_data['restaurant_name'])
+        print("Received restaurant image:", form.cleaned_data['restaurant_image'])
+        return super().form_valid(form)
 
 class RestaurantListView(ListView):
     model = Restaurant
