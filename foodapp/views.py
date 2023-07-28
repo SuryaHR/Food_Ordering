@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -47,8 +47,18 @@ def registration_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            print("Form data is valid:")
+            print(form.cleaned_data)
+            user = form.save(commit=False)
+            role = form.cleaned_data.get('role')
+            if role == 'admin':
+                user.is_staff = True
+            user.save()
+            print("User registered successfully.")
             return redirect('foodapp:login')  # Redirect to the login page after successful registration
+        else:
+            print("Form data is invalid:")
+            print(form.errors)
     else:
         form = RegistrationForm()
 
@@ -77,19 +87,22 @@ class RestaurantDetailView(DetailView):
     template_name = 'restaurant_detail.html'
     context_object_name = 'restaurant'
 
-def menu_list(request, pk):
-    restaurant = Restaurant.objects.get(pk=pk)
+def menu_list(request, id):
+    restaurant = get_object_or_404(Restaurant, id=id)
     foods = Food.objects.filter(restaurant=restaurant)
     return render(request, 'foodapp/menu_list.html', {'restaurant': restaurant, 'foods': foods})
 
-class AddFood(CreateView):
-    model = Food
-    form_class = FoodForm
-    template_name = 'foodapp/add_food.html'
+def add_food(request, restaurant_id):
+    restaurant = Restaurant.objects.get(id=restaurant_id)
 
-    def form_valid(self, form):
-        form.instance.restaurant = Restaurant.objects.get(pk=self.kwargs['pk'])
-        return super().form_valid(form)
+    if request.method == 'POST':
+        form = FoodForm(request.POST, request.FILES)
+        if form.is_valid():
+            food = form.save(commit=False)
+            food.restaurant = restaurant
+            food.save()
+            return redirect('foodapp:menu_list', id=restaurant_id)
+    else:
+        form = FoodForm()
 
-    def get_success_url(self):
-        return reverse_lazy('foodapp:menu_list', kwargs={'pk': self.kwargs['pk']})
+    return render(request, 'foodapp/add_food.html', {'form': form, 'restaurant': restaurant})

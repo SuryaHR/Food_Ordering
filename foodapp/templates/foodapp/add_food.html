@@ -1,26 +1,20 @@
-<!-- add_food.html -->
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Food for {{ restaurant.restaurant_name }}</title>
+    <!-- Add your CSS and other meta information here -->
 </head>
 <body>
-    <h1>Add Food for {{ restaurant.restaurant_name }}</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div>
-            <label for="food_name">Food Name:</label>
-            <input type="text" name="food_name" id="food_name" required>
+    <!-- Your navbar code here -->
+
+    <main style="width:100%;margin-top: 70px;margin-bottom: 10px;background-color:#FFF;">
+        <div class="container">
+            <h1 class="text-center">Add Food for {{ restaurant.restaurant_name }}</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" class="btn" style="color:white;" value="Add Food">
+            </form>
         </div>
-        <div>
-            <label for="food_image">Food Image:</label>
-            <input type="file" name="food_image" id="food_image" required>
-        </div>
-        <div>
-            <input type="submit" value="Add Food">
-        </div>
-    </form>
+    </main>
 </body>
 </html>

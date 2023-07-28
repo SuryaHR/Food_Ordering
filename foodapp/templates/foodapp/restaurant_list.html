@@ -7,6 +7,10 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/master.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
     <style>
+        main{
+            background: url("/static/images/background.jpeg") no-repeat;
+            background-size: cover;
+        }
         .restaurant-card {
             position: relative;
             text-align: center;
@@ -57,9 +61,9 @@
                 <li class="nav-item active">
                 <a class="nav-link" id="nav-link" href="{% url 'foodapp:home'%}">Home <span class="sr-only">(current)</span></a>
                 </li>
-                {% if user.is_authenticated %}
+                {% if user.is_staff %}
                 <li class="nav-item active ml-auto">
-                    <a class="nav-link" id="nav-link" href="{% url 'foodapp:add_restaurant' %}">AddRestaurant<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" id="nav-link" href="">AddRestaurant<span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
@@ -81,7 +85,7 @@
                 {% for restaurant in restaurants %}
                 <div class="col-md-4 mb-4">
                     <div class="restaurant-card">
-                        <a href="{% url 'foodapp:menu_list' restaurant.pk %}">
+                        <a href="{% url 'foodapp:menu_list' restaurant.id %}">
                             <img src="{{ restaurant.restaurant_image.url }}" alt="{{ restaurant.restaurant_name }}" class="restaurant-image">
                         </a>
                         <div class="restaurant-name">{{ restaurant.restaurant_name }}</div>
