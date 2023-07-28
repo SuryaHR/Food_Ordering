@@ -9,10 +9,19 @@ from django.urls import reverse_lazy
 from .forms import RegistrationForm
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Restaurant, Food
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+
 def index(request):
-    return render(request,'foodapp/index.html')
+    # If the user is logged in, redirect to the restaurant_list page
+    if request.user.is_authenticated:
+        return redirect('foodapp:restaurant_list')
+    
+    return render(request, 'foodapp/index.html')
+
+def home_view(request):
+    return render(request, 'foodapp/index.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -62,3 +71,8 @@ class RestaurantDetailView(DetailView):
     model = Restaurant
     template_name = 'restaurant_detail.html'
     context_object_name = 'restaurant'
+
+def menu_list(request, pk):
+    restaurant = Restaurant.objects.get(pk=pk)
+    foods = Food.objects.filter(restaurant=restaurant)
+    return render(request, 'foodapp/menu_list.html', {'restaurant': restaurant, 'foods': foods})

@@ -33,7 +33,7 @@
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item active ml-auto">
-                    <a class="nav-link" id="nav-link" href="">AddRestaurant<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" id="nav-link" href="">AddFood<span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
@@ -48,18 +48,34 @@
             </ul>
         </div>
     </nav>
+
     <main style="width:100%;margin-top: 0;margin-bottom: 10px;background-color:#FFF;">
         <div class="" style="max-width:100%;padding-top:20px;padding-bottom:20px;">
-            <h1>Restaurant List</h1>
-            {% for restaurant in restaurants %}
+            <h1>Menu List for {{ restaurant.restaurant_name }}</h1>
+            {% for food in foods %}
             <div>
-                <a href="{% url 'foodapp:menu_list' restaurant.pk %}">
-                    <img src="{{ restaurant.restaurant_image.url }}" alt="{{ restaurant.restaurant_name }}" style="height: 50%;width: 50%">
-                </a>
-                <h3>{{ restaurant.restaurant_name }}</h3>
-            </div>
+                <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;">
+                <h3>{{ food.food_name }}</h3>
+            </div> 
             {% endfor %}
         </div>
     </main>
 </html>
 
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu List for {{ restaurant.restaurant_name }}</title>
+</head>
+<body>
+    <h1>Menu List for {{ restaurant.restaurant_name }}</h1>
+    {% for food in foods %}
+    <div>
+        <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}">
+        <h3>{{ food.food_name }}</h3>
+    </div>
+    {% endfor %}
+</body>
+</html> {% endcomment %}

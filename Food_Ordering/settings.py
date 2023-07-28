@@ -140,5 +140,9 @@ LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/'
 
+# Set session age to 3 to 5 minutes (180 to 300 seconds)
+SESSION_COOKIE_AGE = 300 # 3 minutes in seconds
+
+
 
 
