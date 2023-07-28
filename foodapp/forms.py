@@ -2,7 +2,7 @@ from django import forms
 from .models import CustomUser
 
 from django import forms
-from foodapp.models import CustomUser, Restaurant
+from foodapp.models import CustomUser,Restaurant,Food
 
 class RegistrationForm(forms.ModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput)
@@ -37,3 +37,8 @@ class RestaurantForm(forms.ModelForm):
     class Meta:
         model = Restaurant
         fields = ['restaurant_name', 'restaurant_image']
+
+class FoodForm(forms.ModelForm):
+    class Meta:
+        model = Food
+        fields = ['food_name', 'food_image']

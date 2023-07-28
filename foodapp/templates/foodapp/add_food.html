@@ -1,0 +1,26 @@
+<!-- add_food.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Food for {{ restaurant.restaurant_name }}</title>
+</head>
+<body>
+    <h1>Add Food for {{ restaurant.restaurant_name }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label for="food_name">Food Name:</label>
+            <input type="text" name="food_name" id="food_name" required>
+        </div>
+        <div>
+            <label for="food_image">Food Image:</label>
+            <input type="file" name="food_image" id="food_image" required>
+        </div>
+        <div>
+            <input type="submit" value="Add Food">
+        </div>
+    </form>
+</body>
+</html>

@@ -3,7 +3,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, RestaurantForm, RegistrationForm
+from .forms import LoginForm, RestaurantForm, RegistrationForm,FoodForm
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from .models import Restaurant, Food
@@ -81,3 +81,15 @@ def menu_list(request, pk):
     restaurant = Restaurant.objects.get(pk=pk)
     foods = Food.objects.filter(restaurant=restaurant)
     return render(request, 'foodapp/menu_list.html', {'restaurant': restaurant, 'foods': foods})
+
+class AddFood(CreateView):
+    model = Food
+    form_class = FoodForm
+    template_name = 'foodapp/add_food.html'
+
+    def form_valid(self, form):
+        form.instance.restaurant = Restaurant.objects.get(pk=self.kwargs['pk'])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('foodapp:menu_list', kwargs={'pk': self.kwargs['pk']})
