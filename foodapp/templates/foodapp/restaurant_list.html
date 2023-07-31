@@ -75,6 +75,15 @@
                     <a class="nav-link" id="nav-link" href="{% url 'foodapp:login' %}">Login <span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">DropDown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="">Your Orders</a>
+                      <a class="dropdown-item" href="{% url 'foodapp:cart'%}">Cart
+                      <a class="dropdown-item" href="">Back</a>
+                    </div>
+                  </li>
             </ul>
         </div>
     </nav>

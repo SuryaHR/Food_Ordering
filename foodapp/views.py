@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginForm, RestaurantForm, RegistrationForm,FoodForm
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Restaurant, Food
+from .models import Restaurant,Food,Cart,CartItem,Order
 
 # Create your views here.
 
@@ -64,6 +64,10 @@ def registration_view(request):
 
     return render(request, 'foodapp/signup.html', {'form': form})
 
+def go_back(request):
+    previous_page = request.META.get('HTTP_REFERER')
+    return redirect(previous_page)
+
 class AddRestaurant(CreateView):
     model = Restaurant
     form_class = RestaurantForm
@@ -106,3 +110,34 @@ def add_food(request, restaurant_id):
         form = FoodForm()
 
     return render(request, 'foodapp/add_food.html', {'form': form, 'restaurant': restaurant})
+
+def add_to_cart(request, food_pk):
+    food = get_object_or_404(Food, pk=food_pk)
+
+    # Get or create the user's cart
+    cart, created = Cart.objects.get_or_create(user=request.user)
+
+    # Check if the food is already in the cart
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, food=food)
+
+    # Increase the quantity if the item is already in the cart
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    return redirect('foodapp:cart')
+
+def view_cart(request):
+    cart = Cart.objects.get(user=request.user)
+    cart_items = cart.items.all()
+
+    return render(request, 'foodapp/cart.html', {'cart_items': cart_items})
+
+
+def place_order(request, food_pk):
+    food = Food.objects.get(pk=food_pk)
+    order, created = Order.objects.get_or_create(user=request.user, food=food)
+    if not created:
+        order.quantity += 1
+        order.save()
+    return redirect('foodapp:menu_list', restaurant_pk=food.restaurant.pk)

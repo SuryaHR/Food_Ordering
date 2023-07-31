@@ -1,0 +1,9 @@
+<h1>Your Cart</h1>
+
+{% for item in cart_items %}
+<div>
+    <img src="{{ item.food.food_image.url }}" alt="{{ item.food.food_name }}">
+    <h3>{{ item.food.food_name }}</h3>
+    <p>Quantity: {{ item.quantity }}</p>
+</div>
+{% endfor %}

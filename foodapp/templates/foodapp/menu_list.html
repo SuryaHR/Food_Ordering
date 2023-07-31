@@ -5,6 +5,27 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="{% static 'css/home_style.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/master.css' %}" />
+
+    <style>
+        main{
+            background: url("/static/images/background.jpeg") no-repeat;
+            background-size: cover;
+        }
+        .menu-card {
+            position: relative;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .menu-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+    </style>
+
     <link href="https://fonts.googleapis.com/css?family=Caveat:700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Bevan&display=swap" rel="stylesheet">
@@ -49,15 +70,21 @@
         </div>
     </nav>
 
-    <main style="width:100%;margin-top: 0;margin-bottom: 10px;background-color:#FFF;">
-        <div class="" style="max-width:100%;padding-top:20px;padding-bottom:20px;">
-            <h1>Menu List for {{ restaurant.restaurant_name }}</h1>
-            {% for food in foods %}
-            <div>
-                <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;">
-                <h3>{{ food.food_name }}</h3>
-            </div> 
-            {% endfor %}
+    <main style="width:100%;margin-top: 0;margin-bottom: 10px;background-color:#FFF;" class="mt-5">
+        <div class="container">
+            <h1 class="text-center mt-5">Menu List for {{ restaurant.restaurant_name }}</h1>
+            <div class="row">
+                {% for food in foods %}
+                <div class="col-md-4 mb-4">
+                    <div class="menu-card">
+                        <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;"class="menu-image">
+                        <h3>{{ food.food_name }}</h3>
+                        <a href="{% url 'foodapp:add_to_cart' food.pk %}">Add to Cart</a>
+                        <a href="{% url 'foodapp:place_order' food.pk %}">Place Order</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </main>
 </html>
