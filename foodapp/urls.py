@@ -13,7 +13,8 @@ urlpatterns = [
     path('menu_list/<int:id>/', views.menu_list, name='menu_list'),
     path('restaurant/<int:id>/', views.RestaurantDetailView.as_view(), name='restaurant_detail'),
     path('add_food/<int:restaurant_id>/', views.add_food, name="add_food"),
-    path('add_to_cart/<int:food_pk>/', views.add_to_cart, name='add_to_cart'),
+    # path('menu_list/<int:food_id>/delete/', views.delete_food, name='delete_food'),
+    path('add_to_cart/<int:food_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.view_cart, name='cart'),
-    path('place_order/<int:food_pk>/', views.place_order, name='place_order'),
+    path('remove_from_cart/<int:food_id>/', views.remove_from_cart, name='remove_from_cart'),
 ]

@@ -79,8 +79,7 @@
                     <div class="menu-card">
                         <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;"class="menu-image">
                         <h3>{{ food.food_name }}</h3>
-                        <a href="{% url 'foodapp:add_to_cart' food.pk %}">Add to Cart</a>
-                        <a href="{% url 'foodapp:place_order' food.pk %}">Place Order</a>
+                        <a href="{% url 'foodapp:add_to_cart' food.id %}" class="btn btn-success">Add to Cart</a>
                     </div>
                 </div>
                 {% endfor %}

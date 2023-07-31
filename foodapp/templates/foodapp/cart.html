@@ -1,9 +1,21 @@
 <h1>Your Cart</h1>
 
-{% for item in cart_items %}
-<div>
-    <img src="{{ item.food.food_image.url }}" alt="{{ item.food.food_name }}">
-    <h3>{{ item.food.food_name }}</h3>
-    <p>Quantity: {{ item.quantity }}</p>
-</div>
-{% endfor %}
+{% if cart_items %}
+  {% for cart_item in cart_items %}
+    <div class="cart-item">
+      <img src="{{ cart_item.food.food_image.url }}" alt="{{ cart_item.food.food_name }}" class="menu-image">
+      <h4>{{ cart_item.food.food_name }}</h4>
+      <p>Quantity: {{ cart_item.quantity }}</p>
+      <form method="post" action="{% url 'foodapp:remove_from_cart' cart_item.food.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Remove</button>
+      </form>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No items in the cart.</p>
+{% endif %}
+
+
+
+

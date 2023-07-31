@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginForm, RestaurantForm, RegistrationForm,FoodForm
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Restaurant,Food,Cart,CartItem,Order
+from .models import Restaurant,Food,CartItem,Order
 
 # Create your views here.
 
@@ -111,27 +111,59 @@ def add_food(request, restaurant_id):
 
     return render(request, 'foodapp/add_food.html', {'form': form, 'restaurant': restaurant})
 
-def add_to_cart(request, food_pk):
-    food = get_object_or_404(Food, pk=food_pk)
+# def delete_food(request, food_id):
+#     if not request.user.is_staff:
+#         return redirect('foodapp:menu_list')
 
-    # Get or create the user's cart
-    cart, created = Cart.objects.get_or_create(user=request.user)
+#     food = get_object_or_404(Food, pk=food_id)
 
-    # Check if the food is already in the cart
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, food=food)
+#     if request.method == 'POST':
+#         # Delete the food item
+#         food.delete()
+#         messages.success(request, f"{food.food_name} deleted successfully.")
+#         return redirect('foodapp:menu_list')
 
-    # Increase the quantity if the item is already in the cart
+#     context = {
+#         'foods': Food.objects.all(),
+#     }
+
+#     return render(request, 'foodapp/menu_list.html', context)
+
+def add_to_cart(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
+    user = request.user
+    cart_item, created = CartItem.objects.get_or_create(food=food, user=user)
     if not created:
         cart_item.quantity += 1
         cart_item.save()
+    messages.success(request, f"{food.food_name} added to the cart!")
 
-    return redirect('foodapp:cart')
+    return redirect('foodapp:restaurant_list')
 
 def view_cart(request):
-    cart = Cart.objects.get(user=request.user)
-    cart_items = cart.items.all()
-
+    user = request.user
+    cart_items = CartItem.objects.filter(user=user)
     return render(request, 'foodapp/cart.html', {'cart_items': cart_items})
+
+def remove_from_cart(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
+    user = request.user
+
+    try:
+        cart_item = CartItem.objects.get(food=food, user=user)
+
+        # If the quantity is greater than 1, decrease it by 1
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+            messages.success(request, f"One quantity of {food.food_name} removed from the cart.")
+        else:
+            cart_item.delete()
+            messages.success(request, f"{food.food_name} removed from the cart.")
+    except CartItem.DoesNotExist:
+        messages.error(request, "Item not found in the cart.")
+
+    return redirect('foodapp:cart')
 
 
 def place_order(request, food_pk):

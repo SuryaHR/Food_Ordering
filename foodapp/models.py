@@ -32,13 +32,9 @@ class Food(models.Model):
     def __str__(self):
         return self.food_name
     
-class Cart(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    items = models.ManyToManyField(Food, through='CartItem')
-
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     food = models.ForeignKey(Food, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     quantity = models.PositiveIntegerField(default=1)
 
 class Order(models.Model):
