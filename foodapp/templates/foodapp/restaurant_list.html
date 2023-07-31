@@ -63,7 +63,7 @@
                 </li>
                 {% if user.is_staff %}
                 <li class="nav-item active ml-auto">
-                    <a class="nav-link" id="nav-link" href="">AddRestaurant<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" id="nav-link" href="{% url 'foodapp:add_restaurant'%}">AddRestaurant<span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
                 {% if user.is_authenticated %}
