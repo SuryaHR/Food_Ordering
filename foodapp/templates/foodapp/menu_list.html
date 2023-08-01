@@ -24,6 +24,8 @@
             border-radius: 8px;
         }
 
+
+
     </style>
 
     <link href="https://fonts.googleapis.com/css?family=Caveat:700&display=swap" rel="stylesheet">
@@ -80,6 +82,9 @@
                         <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;"class="menu-image">
                         <h3>{{ food.food_name }}</h3>
                         <a href="{% url 'foodapp:add_to_cart' food.id %}" class="btn btn-success">Add to Cart</a>
+                        <br>
+                        <label class="pt-2" for="quantity">Quantity:</label>
+                        <input type="number" name="quantity" id="quantity" min="1" value="1">
                     </div>
                 </div>
                 {% endfor %}

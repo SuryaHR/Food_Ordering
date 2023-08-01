@@ -79,6 +79,10 @@ class AddRestaurant(CreateView):
         # Print the form data in the terminal.
         print("Received restaurant name:", form.cleaned_data['restaurant_name'])
         print("Received restaurant image:", form.cleaned_data['restaurant_image'])
+        restaurant_name = form.cleaned_data['restaurant_name']
+        if Restaurant.objects.filter(restaurant_name=restaurant_name).exists():
+            messages.error(self.request, f"A restaurant with the name '{restaurant_name}' already exists.")
+            return redirect('foodapp:add_restaurant')
         return super().form_valid(form)
 
 class RestaurantListView(ListView):
