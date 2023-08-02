@@ -1,0 +1,6 @@
+<h1>Are you sure want to delete this restaurant?</h1>
+<h1>{{restaurant.restaurant_name}}
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="Confirm Delete">

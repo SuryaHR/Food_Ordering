@@ -89,7 +89,7 @@
     </nav>
     <main style="width:100%;margin-top: 70px;margin-bottom: 10px;background-color:#FFF;">
         <div class="container">
-            <h1 class="text-center">Restaurant List</h1>
+            <h1 class="text-center pt-2">Restaurant List</h1>
             {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
@@ -104,7 +104,13 @@
                         <a href="{% url 'foodapp:menu_list' restaurant.id %}">
                             <img src="{{ restaurant.restaurant_image.url }}" alt="{{ restaurant.restaurant_name }}" class="restaurant-image">
                         </a>
-                        <div class="restaurant-name">{{ restaurant.restaurant_name }}</div>
+                        <div style="font-weight: bold;">{{ restaurant.restaurant_name }}</div>
+                        {% if user.is_staff%}
+                            <div class="col-mb-4 mb-4">
+                                <a href="{% url 'foodapp:delete_restaurant' restaurant.pk %}" class="btn btn-danger">Delete</a>
+                                <a href="{% url 'foodapp:update_restaurant' restaurant.pk %}" class="btn btn-info">Update</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

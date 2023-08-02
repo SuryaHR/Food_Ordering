@@ -1,0 +1,100 @@
+body {
+    margin: 0;
+    padding: 0;
+    /* background-color: #f31919; Set the background color */
+    background: url("static/images/bgimg.jpg") 50% 0 no-repeat fixed;
+    /* background-image: url('static/images/restaurant_list.jpeg'); Set the background image URL */
+    background-repeat: no-repeat;
+    background-size: cover; /* or 'contain', depending on how you want the image to be displayed */
+    background-position: center center; /* Adjust this as needed */
+  }
+  
+
+.login-box{
+    margin-top: 20px;
+    width: 280px;
+    position: absolute;
+    top: 48%;
+    left: 35%;
+    transform: translate(-50%,-50%);
+    color:black;
+  }
+
+  .login-box h1{
+    /* float: left; */
+    font-size: 40px;
+    border-bottom: 5px solid #FF5722;
+    margin-bottom: 30px;
+    padding: 10px 0;
+  }
+
+  .textbox{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    font-size: 25px;
+    padding: 15px 0;
+    margin: 15px 0;
+    border-bottom: 1px solid black;
+  } 
+ .textbox1{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    font-size: 25px;
+    padding: 15px 0;
+    margin: 15px 0;
+    border-bottom: 1px solid black;
+  }
+
+  .textbox i{
+    width: 26px;
+    float: left;
+    text-align: center;
+  }
+ .textbox1 i{
+    width: 26px;
+    float: left;
+    text-align: center;
+  }
+  .textbox input{
+    border: none;
+    outline: none;
+    background: none;
+    color: white;
+    font-size: 18px;
+    width: 80%;
+    float: left;
+    margin-top: 10px;
+  }
+
+  .textbox1 input{
+    border: none;
+    outline: none;
+    background: none;
+    color: whitesmoke;
+    font-size: 18px;
+    width: 80%;
+    float: left;
+    margin: 10px;
+  }
+
+  /* .btn-box{
+    position: center;
+
+  } */
+
+  .btn{
+    text-align: center;
+    width: 100%;
+    background: transparent;
+    border: 2px solid black;
+    color: wheat;
+    padding: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 12px 0;
+    
+  }

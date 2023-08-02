@@ -1,0 +1,24 @@
+* {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    /* background-color: #f31919; Set the background color */
+    background: url("static/images/Addfood.jpeg") 50% 0 no-repeat fixed;
+    /* background-image: url('static/images/restaurant_list.jpeg'); Set the background image URL */
+    background-repeat: no-repeat;
+    background-size: cover; /* or 'contain', depending on how you want the image to be displayed */
+    background-position: center center; /* Adjust this as needed */
+  }
+  
+  /* .mx-6{
+    margin: 50px 0px;
+  } */
+  
+  .custom-form{
+    margin-top: 30px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: large;
+  }

@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.views import LogoutView
 from django.contrib import messages
-from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, RestaurantForm, RegistrationForm,FoodForm
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView,DeleteView,UpdateView
 from .models import Restaurant,Food,CartItem,Order
 
 # Create your views here.
@@ -72,7 +71,7 @@ class AddRestaurant(CreateView):
     model = Restaurant
     form_class = RestaurantForm
     template_name = 'foodapp/restaurant_form.html'
-    success_url = reverse_lazy("foodapp:restaurant_list")
+    success_url = reverse_lazy('foodapp:restaurant_list')
 
     def form_valid(self, form):
         # This method is called when the form is valid.
@@ -94,6 +93,16 @@ class RestaurantDetailView(DetailView):
     model = Restaurant
     template_name = 'restaurant_detail.html'
     context_object_name = 'restaurant'
+
+class UpdateRestaurant(UpdateView):
+    model = Restaurant
+    fields = '__all__'
+    template_name = 'foodapp/restaurant_form.html'
+    success_url = reverse_lazy('foodapp:restaurant_list')
+
+class DeleteRestaurant(DeleteView):
+    model = Restaurant
+    success_url = reverse_lazy('foodapp:restaurant_list')
 
 def menu_list(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)

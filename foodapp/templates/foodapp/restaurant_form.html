@@ -4,11 +4,12 @@
     {% load static %}
     <meta charset="utf-8">
     <title>New Restaurant</title>
-    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form1.css' %}">
 </head>
 <body>
     <div class="login-box">
         <h1>New Restaurant</h1>
+
         {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
@@ -16,22 +17,25 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
         <form class="login-form" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+
             <div class="textbox">
                 <i class="fas fa-user"></i>
-                <label for="id_restaurant_name">Restaurant Name:</label>
+                <label for="id_restaurant_name"><b><u>Restaurant Name:<u></b></label>
                 {{ form.restaurant_name }}
             </div>
 
-            <div class="textbox">
+            <div class="textbox1">
                 <i class="fas fa-lock"></i>
-                <label for="id_restaurant_image">Restaurant Image:</label>
+                <label for="id_restaurant_image" ><b><u>Restaurant Image:</u></b></label>
                 {{ form.restaurant_image }}
             </div>
+           
             <br>
-            <div>
-                <input type="submit" class="btn" style="color:white;" value="Add">
+            <div class="btn-box">
+                <input class="btn" type="submit" value="Add Restaurant">
             </div>
         </form>
         <br>
