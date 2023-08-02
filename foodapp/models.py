@@ -36,9 +36,3 @@ class CartItem(models.Model):
     food = models.ForeignKey(Food, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
     quantity = models.PositiveIntegerField(default=1)
-
-class Order(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    food = models.ForeignKey(Food, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    is_completed = models.BooleanField(default=False)

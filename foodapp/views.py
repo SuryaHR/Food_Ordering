@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginForm, RestaurantForm, RegistrationForm,FoodForm
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView,DeleteView,UpdateView
-from .models import Restaurant,Food,CartItem,Order
+from .models import Restaurant,Food,CartItem
 
 # Create your views here.
 
@@ -133,27 +133,6 @@ def add_food(request, restaurant_id):
 
     return render(request, 'foodapp/add_food.html', {'form': form, 'restaurant': restaurant})
 
-
-
-
-# def delete_food(request, food_id):
-#     if not request.user.is_staff:
-#         return redirect('foodapp:menu_list')
-
-#     food = get_object_or_404(Food, pk=food_id)
-
-#     if request.method == 'POST':
-#         # Delete the food item
-#         food.delete()
-#         messages.success(request, f"{food.food_name} deleted successfully.")
-#         return redirect('foodapp:menu_list')
-
-#     context = {
-#         'foods': Food.objects.all(),
-#     }
-
-#     return render(request, 'foodapp/menu_list.html', context)
-
 def add_to_cart(request, food_id):
     food = get_object_or_404(Food, pk=food_id)
     user = request.user
@@ -190,11 +169,3 @@ def remove_from_cart(request, food_id):
 
     return redirect('foodapp:cart')
 
-
-def place_order(request, food_pk):
-    food = Food.objects.get(pk=food_pk)
-    order, created = Order.objects.get_or_create(user=request.user, food=food)
-    if not created:
-        order.quantity += 1
-        order.save()
-    return redirect('foodapp:menu_list', restaurant_pk=food.restaurant.pk)
