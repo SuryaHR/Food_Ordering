@@ -82,10 +82,18 @@
                         <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;"class="menu-image">
                         <h3>{{ food.food_name }}</h3>
                         <a href="{% url 'foodapp:add_to_cart' food.id %}" class="btn btn-success">Add to Cart</a>
+                        <a href="{% url 'foodapp:delete_food' food.pk %}" class="btn btn-danger">Delete</a>
                         <br>
                         <label class="pt-2" for="quantity">Quantity:</label>
                         <input type="number" name="quantity" id="quantity" min="1">
                     </div>
+                    {% comment %} <div style="font-weight: bold;">{{ restaurant.food_name }}</div>
+                        {% if user.is_staff%}
+                            <div class="col-mb-4 mb-4">
+                                
+                            </div>
+                        {% endif %}
+                    </div> {% endcomment %}
                 </div>
                 {% endfor %}
             </div>

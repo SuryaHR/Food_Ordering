@@ -15,8 +15,10 @@ urlpatterns = [
     path('restaurant/<int:id>/', views.RestaurantDetailView.as_view(), name='restaurant_detail'),
     path('delete_restaurant/<int:pk>/', views.DeleteRestaurant.as_view(), name="delete_restaurant"),
     path('add_food/<int:restaurant_id>/', views.add_food, name="add_food"),
-    # path('menu_list/<int:food_id>/delete/', views.delete_food, name='delete_food'),
+    
+# path('menu_list/<int:food_id>/delete/', views.delete_food, name='delete_food'),
     path('add_to_cart/<int:food_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.view_cart, name='cart'),
     path('remove_from_cart/<int:food_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('delete_food/<int:pk>/', views.Deletefood.as_view(), name="delete_food"),
 ]

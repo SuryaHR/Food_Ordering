@@ -109,6 +109,15 @@ def menu_list(request, id):
     foods = Food.objects.filter(restaurant=restaurant)
     return render(request, 'foodapp/menu_list.html', {'restaurant': restaurant, 'foods': foods})
 
+class Deletefood(DeleteView):
+    model = Food
+    success_url = reverse_lazy('foodapp:menu_list')
+
+    def get_success_url(self):
+        # Get the restaurant_id from the food instance before it's deleted
+        restaurant_id = self.object.restaurant.id
+        return reverse_lazy('foodapp:menu_list', kwargs={'id': restaurant_id})
+
 def add_food(request, restaurant_id):
     restaurant = Restaurant.objects.get(id=restaurant_id)
 
@@ -123,6 +132,9 @@ def add_food(request, restaurant_id):
         form = FoodForm()
 
     return render(request, 'foodapp/add_food.html', {'form': form, 'restaurant': restaurant})
+
+
+
 
 # def delete_food(request, food_id):
 #     if not request.user.is_staff:
