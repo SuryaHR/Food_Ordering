@@ -457,6 +457,12 @@ footer {
 
 }
 
+.menu-image{
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+
+}
 @media (max-width:720px) {
     footer {
         font-size: 10px;

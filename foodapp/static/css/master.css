@@ -6,7 +6,7 @@
   text-decoration: none;
 }
 body{
-  background-image: url("/static/images/mainscreen4.jpg");
+  background-image: url("/static/images/mainscreen4.jpg"); 
   height: 100vh;
   max-width: 100%;
   background-size: cover;
@@ -190,3 +190,4 @@ footer {
       text-align: left;
     }
 }
+

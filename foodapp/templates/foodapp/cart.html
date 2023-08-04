@@ -1,4 +1,5 @@
-<h1>Your Cart</h1>
+<br>
+<h1 style="text-align:center; margin-top:30px;"><u><b>Your Cart</b></u></h1>
 
 {% if cart_items %}
   {% for cart_item in cart_items %}
@@ -13,9 +14,5 @@
     </div>
   {% endfor %}
 {% else %}
-  <p>No items in the cart.</p>
+  <h3 style="text-align:center;">No items in the cart.</h3>
 {% endif %}
-
-
-
-

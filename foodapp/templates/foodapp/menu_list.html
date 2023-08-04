@@ -17,12 +17,12 @@
             padding: 10px;
         }
 
-        .menu-image {
+        {% comment %} .menu-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
             border-radius: 8px;
-        }
+        } {% endcomment %}
 
 
 
@@ -79,10 +79,12 @@
                 {% for food in foods %}
                 <div class="col-md-4 mb-4">
                     <div class="menu-card">
-                        <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="height: 50%;width: 50%;"class="menu-image">
+                        <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="margin-top: 40px; height: 100%;width: 100%;" class="menu-image">
                         <h3>{{ food.food_name }}</h3>
-                        <a href="{% url 'foodapp:add_to_cart' food.id %}" class="btn btn-success">Add to Cart</a>
+
+                        <a href="{% url 'foodapp:add_to_cart' food.id %}" class="margin-top: 50px; btn btn-success">Add to Cart</a>
                         <a href="{% url 'foodapp:delete_food' food.pk %}" class="btn btn-danger">Delete</a>
+                        <br>
                         <br>
                     </div>
                 </div>
