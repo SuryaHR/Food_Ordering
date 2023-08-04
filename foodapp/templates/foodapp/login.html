@@ -9,13 +9,6 @@
 <body>
     <div class="login-box">
         <h1>Login</h1>
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
         <form class="login-form" method="POST">
             {% csrf_token %}
             <div class="textbox">

@@ -9,22 +9,6 @@
 <body>
     <div class="login-box" style="">
         <h1>Register Here</h1>
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% if form.errors %}
-        <ul class="errorlist">
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-        {% endif %}
         <form class="login-form" method="POST">
             {% csrf_token %}
             <div class="textbox">
@@ -68,6 +52,9 @@
             <br>
             <div>
                 <input type="submit" class="btn" style="color:white;" value="Register">
+            </div>
+            <div>
+                <b> Already Have an Account  &nbsp <a href="{% url 'foodapp:login' %}" style="color: white;"> <span><u>Login<u></span></a><b>
             </div>
         </form>
         <br>

@@ -36,7 +36,6 @@ def login_view(request):
                 return redirect('foodapp:restaurant_list')  # Redirect to the home page after successful login
             else:
                 print("Login failed. Invalid username or password.")
-                messages.error(request, 'Invalid username or password. Please try again.')
     else:
         form = LoginForm()
 
@@ -62,10 +61,6 @@ def registration_view(request):
         form = RegistrationForm()
 
     return render(request, 'foodapp/signup.html', {'form': form})
-
-def go_back(request):
-    previous_page = request.META.get('HTTP_REFERER')
-    return redirect(previous_page)
 
 class AddRestaurant(CreateView):
     model = Restaurant
