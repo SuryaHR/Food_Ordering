@@ -1,11 +1,16 @@
+from django.conf import settings
+import stripe
 from django.shortcuts import render, redirect,get_object_or_404
-from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, RestaurantForm, RegistrationForm,FoodForm
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView,DeleteView,UpdateView
-from .models import Restaurant,Food,CartItem
+from .forms import RestaurantForm,FoodForm
+from django.urls import reverse_lazy, reverse
+from django.views.generic import DetailView, CreateView,UpdateView
+from .models import Restaurant,Food,CartItem, CustomUser, Order
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 
@@ -19,48 +24,59 @@ def index(request):
 def home_view(request):
     return render(request, 'foodapp/index.html')
 
-def login_view(request):
+def login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+        username = request.POST['username']
+        password = request.POST['password']
 
-            print("Received username:", username)
-            print("Received password:", password)
-
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                print("Login successful!")
-                return redirect('foodapp:restaurant_list')  # Redirect to the home page after successful login
+        try:
+            user = CustomUser.objects.get(username=username)
+            print("User Role:", user.role) 
+            if user.password == password:
+                request.session['is_login'] = True
+                request.session['user_role'] = user.role  
+                request.session['user_id'] = user.id
+                print("Session Variable is_login:", request.session.get('is_login'))
+                # Successful login
+                print("User Role:", user.role)
+                return redirect('foodapp:restaurant_list')
             else:
-                print("Login failed. Invalid username or password.")
-    else:
-        form = LoginForm()
+                error_msg = "Invalid password."
+                return render(request, 'foodapp/login.html', {'error_msg': error_msg})
+        except CustomUser.DoesNotExist:
+            error_msg = "Invalid username."
+            return render(request, 'foodapp/login.html', {'error_msg': error_msg})
+    
+    return render(request, 'foodapp/login.html')
 
-    return render(request, 'foodapp/login.html', {'form': form})
-
-def registration_view(request):
+def register(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            print("Form data is valid:")
-            print(form.cleaned_data)
-            user = form.save(commit=False)
-            role = form.cleaned_data.get('role')
-            if role == 'admin':
-                user.is_staff = True
-            user.save()
-            print("User registered successfully.")
-            return redirect('foodapp:login')  # Redirect to the login page after successful registration
-        else:
-            print("Form data is invalid:")
-            print(form.errors)
-    else:
-        form = RegistrationForm()
+        username = request.POST['username']
+        email = request.POST['email']
+        contact = request.POST['contact']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        role = request.POST['role']
 
-    return render(request, 'foodapp/signup.html', {'form': form})
+        if password == confirm_password and len(password) >= 6:
+            user = CustomUser.objects.create(
+                username=username, 
+                password=password,
+                email=email,
+                contact=contact,
+                role=role,
+            )
+            request.session['user_id'] = user.id  # Store the user's ID in the session
+            return redirect('foodapp:login')
+        else:
+            error_msg = "Passwords do not match or are too short."
+            return render(request, 'foodapp/signup.html', {'error_msg': error_msg})
+   
+    return render(request, 'foodapp/signup.html')
+
+def logout(request):
+    request.session['is_login'] = False
+    return redirect('foodapp:login')
 
 class AddRestaurant(CreateView):
     model = Restaurant
@@ -78,11 +94,16 @@ class AddRestaurant(CreateView):
             messages.error(self.request, f"A restaurant with the name '{restaurant_name}' already exists.")
             return redirect('foodapp:add_restaurant')
         return super().form_valid(form)
-
-class RestaurantListView(ListView):
-    model = Restaurant
-    template_name = 'restaurant_list.html'
-    context_object_name = 'restaurants'
+    
+def restaurant_list(request):
+    restaurants = Restaurant.objects.all()
+    user = request.user  # Assuming you have the user object in your request
+    # print("User Role in View:", user.role)
+    context = {
+        'restaurants': restaurants,
+        'user': user,
+    }
+    return render(request, 'foodapp/restaurant_list.html', context)
 
 class RestaurantDetailView(DetailView):
     model = Restaurant
@@ -95,23 +116,29 @@ class UpdateRestaurant(UpdateView):
     template_name = 'foodapp/restaurant_form.html'
     success_url = reverse_lazy('foodapp:restaurant_list')
 
-class DeleteRestaurant(DeleteView):
-    model = Restaurant
-    success_url = reverse_lazy('foodapp:restaurant_list')
+def delete_restaurant(request, pk):
+    restaurant = get_object_or_404(Restaurant, pk=pk)
+    if request.method == 'POST':
+        restaurant.delete()
+    return redirect(request.POST.get('next', 'foodapp:restaurant_list'))
 
 def menu_list(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
     foods = Food.objects.filter(restaurant=restaurant)
     return render(request, 'foodapp/menu_list.html', {'restaurant': restaurant, 'foods': foods})
 
-class Deletefood(DeleteView):
-    model = Food
-    success_url = reverse_lazy('foodapp:menu_list')
+def food_detail(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
+    return render(request, 'foodapp/food_detail.html', {'food': food})
 
-    def get_success_url(self):
-        # Get the restaurant_id from the food instance before it's deleted
-        restaurant_id = self.object.restaurant.id
-        return reverse_lazy('foodapp:menu_list', kwargs={'id': restaurant_id})
+def delete_food(request, pk):
+    food = get_object_or_404(Food, pk=pk)
+    if request.method == 'POST':
+        restaurant_id = food.restaurant.id  # Get the restaurant's ID
+        food.delete()
+        return redirect(reverse('foodapp:menu_list', kwargs={'id': restaurant_id}))
+    
+    return redirect(request.POST.get('next', 'foodapp:menu_list'))
 
 def add_food(request, restaurant_id):
     restaurant = Restaurant.objects.get(id=restaurant_id)
@@ -130,7 +157,11 @@ def add_food(request, restaurant_id):
 
 def add_to_cart(request, food_id):
     food = get_object_or_404(Food, pk=food_id)
-    user = request.user
+    user_id = request.session.get('user_id')  # Get user ID from the session
+    if user_id is None:
+        return redirect('foodapp:login')  # Redirect to login if user is not logged in
+
+    user = get_object_or_404(CustomUser, pk=user_id)
     cart_item, created = CartItem.objects.get_or_create(food=food, user=user)
     if not created:
         cart_item.quantity += 1
@@ -140,13 +171,21 @@ def add_to_cart(request, food_id):
     return redirect('foodapp:restaurant_list')
 
 def view_cart(request):
-    user = request.user
+    user_id = request.session.get('user_id')  # Get user ID from the session
+    if user_id is None:
+        return redirect('foodapp:login')  # Redirect to login if user is not logged in
+
+    user = get_object_or_404(CustomUser, pk=user_id)
     cart_items = CartItem.objects.filter(user=user)
     return render(request, 'foodapp/cart.html', {'cart_items': cart_items})
 
 def remove_from_cart(request, food_id):
     food = get_object_or_404(Food, pk=food_id)
-    user = request.user
+    user_id = request.session.get('user_id')  # Get user ID from the session
+    if user_id is None:
+        return redirect('foodapp:login')  # Redirect to login if user is not logged in
+
+    user = get_object_or_404(CustomUser, pk=user_id)
 
     try:
         cart_item = CartItem.objects.get(food=food, user=user)
@@ -163,4 +202,60 @@ def remove_from_cart(request, food_id):
         messages.error(request, "Item not found in the cart.")
 
     return redirect('foodapp:cart')
+
+def order_confirmation(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
+    return render(request, 'foodapp/order_confirmation.html', {'food': food})
+
+def payment(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
+
+    if request.method == 'POST':
+        try:
+            payment_method = request.POST.get('payment_method')
+            
+            if payment_method == 'card':
+                # Create a PaymentIntent on Stripe
+                intent = stripe.PaymentIntent.create(
+                    amount=int(food.price * 100),  # Amount in cents
+                    currency='usd',
+                )
+                client_secret = intent.client_secret
+                
+                return render(request, 'foodapp/payment.html', {'food': food, 'client_secret': client_secret})
+            
+            elif payment_method == 'upi':
+                # Assuming payment processing is successful
+                # Create an order object
+                order = Order.objects.create(food=food, restaurant=food.restaurant, user=request.user)
+                return redirect('foodapp:restaurant_list')
+            
+        except Exception as e:
+            return render(request, 'foodapp/payment.html', {'food': food, 'error': str(e)})
+
+    return render(request, 'foodapp/payment.html', {'food': food})
+
+def orders(request):
+    if request.session.is_login: 
+        if request.session.user_role == 'admin':
+            # Fetch all orders for admins
+            orders = Order.objects.all()
+        else:
+            # Fetch orders for the current user
+            orders = Order.objects.filter(user=request.user)
+    else:
+        # Redirect non-logged in users to login page
+        return redirect('foodapp:login')
+
+    return render(request, 'foodapp/orders.html', {'orders': orders})
+
+
+def complete_order(request, order_id):
+    print("Fetching order details...")
+    order = get_object_or_404(Order, pk=order_id)
+    print("Fetched order:", order.id)
+    return render(request, 'foodapp/complete_order.html', {'order': order})
+
+def payment_success(request):
+    return render(request, 'foodapp/payment_success.html')
 

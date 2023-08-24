@@ -121,7 +121,7 @@ header{
  /* ------------- Banner ------------- */
 
  #banner {
-    background-image: url("/static/images/mainscreen7.jpg");
+    /* background-image: url("/static/images/mainscreen7.jpg"); */
     width: 100%;
     height: 50vh;
     opacity: 1;

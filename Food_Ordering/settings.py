@@ -22,6 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '-+kdi()tdcu-3^rtq@_1m!ca1@mf)%sm-*7cpv27-v*x)pg2k8'
+STRIPE_SECRET_KEY = 'sk_test_51NiDlkSDf8oVRXEAJahi2sDUXOCi9erpdhh4PgnSzvE84o7ibvZzIvXTYHuqjL4tIoXlQ15WNtTDgDw3pBWm0r1000skSNbvW9'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51NiDlkSDf8oVRXEACHIrMnFfDuxuIJ93eEYlYVZ749Uqb47N7Oc6hStBaY9taolmuk75LXpQ9SQ3izAMJty5jvOT00sRLnJ9Pw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,9 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'stripe',
 ]
-
-AUTH_USER_MODEL = 'foodapp.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,7 +85,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Food_Ordering',
-        'USER': 'SuryaHR',
+        'USER': 'Bharadwaj',
         'PASSWORD': 'Surya@1998',
         'HOST': 'localhost',
         'PORT': '',  # Leave it empty for the default MySQL port (usually 3306)
@@ -142,6 +143,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Set session age to 3 to 5 minutes (180 to 300 seconds)
 SESSION_COOKIE_AGE = 300 # 3 minutes in seconds
+
+STRIPE_LIVE_MODE = False  # Set to True for production, False for test mode
+STRIPE_CURRENCY = 'usd'   # Currency code
 
 
 

@@ -9,50 +9,52 @@
 <body>
     <div class="login-box" style="">
         <h1>Register Here</h1>
+        {% if error_msg %}
+            <p>{{ error_msg }}</p>
+        {% endif %}
         <form class="login-form" method="POST">
             {% csrf_token %}
             <div class="textbox">
                 <i class="fas fa-user"></i>
-                <label for="id_username">Username:</label>
-                <input type="text" name="username" id="id_username" required>
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
             </div>
 
             <div class="textbox">
                 <i class="fas fa-lock"></i>
-                <label for="id_email">Email:</label>
-                <input type="email" name="email" id="id_email" required>
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
             </div>
 
             <div class="textbox">
                 <i class="fas fa-lock"></i>
-                <label for="id_contact">Contact:</label>
-                <input type="text" name="contact" id="id_contact" required>
+                <label for="contact">Contact:</label>
+                <input type="text" name="contact" id="contact" required>
             </div>
 
             <div class="textbox">
                 <i class="fas fa-lock"></i>
-                <label for="id_password1">Password:</label>
-                <input type="password" name="password1" id="id_password1" required>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
             </div>
 
             <div class="textbox">
                 <i class="fas fa-lock"></i>
-                <label for="id_password2">Confirm Password:</label>
-                <input type="password" name="password2" id="id_password2" required>
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" name="confirm_password" id="confirm_password" required>
             </div>
 
             <div class="radio-box">
-                <label>User Role:</label>
-                <input type="radio" name="role" value="admin" id="id_role_admin" required>
-                <label for="id_role_admin">Admin</label>
-                <input type="radio" name="role" value="user" id="id_role_user" required>
-                <label for="id_role_user">User</label>
+                <label>Role:</label><br>
+                <label><input type="radio" name="role" value="user" checked> User</label><br>
+                <label><input type="radio" name="role" value="admin"> Admin</label><br>
             </div>
 
             <br>
             <div>
                 <input type="submit" class="btn" style="color:white;" value="Register">
             </div>
+            <br>
             <div>
                 <b> Already Have an Account  &nbsp <a href="{% url 'foodapp:login' %}" style="color: white;"> <span><u>Login<u></span></a><b>
             </div>

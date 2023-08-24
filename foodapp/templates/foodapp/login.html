@@ -9,6 +9,9 @@
 <body>
     <div class="login-box">
         <h1>Login</h1>
+        {% if error_msg %}
+            <p>{{ error_msg }}</p>
+        {% endif %}
         <form class="login-form" method="POST">
             {% csrf_token %}
             <div class="textbox">

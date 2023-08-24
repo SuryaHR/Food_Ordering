@@ -34,6 +34,40 @@
             border-radius: 0 0 8px 8px;
             font-weight: bold;
         }
+        .modal-content {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+        }
+        
+        .delete-message {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .modal-button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .confirm-button {
+            margin-right: 10px;
+        }
+        
+        .cancel-button {
+            background-color: #ccc;
+            border: none;
+        }
+        
     </style>
     <link href="https://fonts.googleapis.com/css?family=Caveat:700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
@@ -49,6 +83,8 @@
 
     <title>FOOD ZONE | Home</title>
 	<link rel="shortcut icon" href="{% static 'images/favico.png' %}" type="image/x-icon">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   </head>
     <nav class="navbar navbar-expand-lg navbar-light" style="position: fixed;width:100%;background-image: linear-gradient(180deg,#FFF,#FFF);box-shadow: 0px 0px 7px 0px #404040;">
         <a class="navbar-brand" href="/"><h2 style="color:black;font-family:sans-serif;font-weight:bolder;"><b>FOOD ZONE</b></h2></a>
@@ -61,17 +97,17 @@
                 <li class="nav-item active">
                 <a class="nav-link" id="nav-link" href="{% url 'foodapp:home'%}">Home <span class="sr-only">(current)</span></a>
                 </li>
-                {% if user.is_staff %}
+                {% if request.session.is_login and request.session.user_role == 'admin' %}
                 <li class="nav-item active ml-auto">
                     <a class="nav-link" id="nav-link" href="{% url 'foodapp:add_restaurant'%}">AddRestaurant<span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
-                {% if user.is_authenticated %}
+                {% if request.session.is_login and request.session.user_role == 'user' %}
                 <li class="nav-item active ml-auto">
                     <a class="nav-link" id="nav-link" href="{% url 'foodapp:cart'%}">Cart<span class="sr-only">(current)</span></a>
                 </li>
                 {% endif %}
-                {% if user.is_authenticated %}
+                {% if request.session.is_login %}
                 <li class="nav-item active ml-auto">
                     <a class="nav-link" id="nav-link" href="{% url 'logout'%}">Logout<span class="sr-only">(current)</span></a>
                 </li>
@@ -101,16 +137,84 @@
                             <img src="{{ restaurant.restaurant_image.url }}" alt="{{ restaurant.restaurant_name }}" class="restaurant-image">
                         </a>
                         <div style="font-weight: bold;">{{ restaurant.restaurant_name }}</div>
-                        {% if user.is_staff%}
+                        {% if request.session.is_login and request.session.user_role == 'admin' %}
                             <div class="col-mb-4 mb-4">
-                                <a href="{% url 'foodapp:delete_restaurant' restaurant.pk %}" class="btn btn-danger">Delete</a>
+                                <button class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal{{ restaurant.id }}">Delete</button>
                                 <a href="{% url 'foodapp:update_restaurant' restaurant.pk %}" class="btn btn-info">Update</a>
                             </div>
                         {% endif %}
                     </div>
                 </div>
+                <div class="modal fade" id="deleteModal{{ restaurant.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="delete-message">Are you sure you want to delete this restaurant?</p>
+                                <h2>{{ restaurant.restaurant_name }}</h2>
+                                <form method="POST" action="{% url 'foodapp:delete_restaurant' restaurant.pk %}">
+                                    {% csrf_token %}
+                                    <div class="modal-button-container">
+                                        <input type="submit" class="btn btn-danger confirm-button" value="Confirm Delete">
+                                        <button type="button" class="btn btn-secondary cancel-button" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 {% endfor %}
             </div>
         </div>
+        <script>
+            $(document).ready(function() {
+                // Get CSRF token from cookies
+                var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+                
+                $('.delete-button').click(function() {
+                    var restaurantId = $(this).data('restaurant-id');
+                    
+                    // Set the form's action attribute with the correct URL
+                    $('#deleteModal form').attr('action', '/foodapp/delete_restaurant/' + restaurantId + '/');
+                    
+                    // Open the modal
+                    $('#deleteModal').modal('show');
+                });
+                
+                $('#confirm-delete-button').click(function() {
+                    var form = $('#deleteModal form');
+                    
+                    // Make the DELETE request
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: 'DELETE',
+                        headers: { 'X-CSRFToken': csrftoken },  // Include CSRF token
+                        success: function(response) {
+                            if (response.success) {
+                                // Close the modal
+                                $('#deleteModal').modal('hide');
+                                
+                                // Remove the deleted restaurant from the DOM
+                                var restaurantId = form.attr('action').split('/').slice(-2, -1)[0];
+                                $('#restaurant-' + restaurantId).remove();
+                            } else {
+                                alert('An error occurred while deleting the restaurant.');
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred while deleting the restaurant.');
+                        }
+                    });
+                });
+            });
+        </script>
+        
+        
     </main>
 </html>

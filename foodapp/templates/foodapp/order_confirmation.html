@@ -1,0 +1,16 @@
+<div class="order-confirmation align-item-center mt-5 mb-5">
+    <h2>Order Confirmation</h2>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <img src="{{ food.food_image.url }}" style="margin-top: 40px; height: 75%;width: 50%;" class="menu-image">
+    <h3>{{ food.food_name }}</h3>
+    <p>Price: {{ food.price }}</p>
+    
+    <!-- Use a direct URL path to navigate to the payment page -->
+    <a href="{% url 'foodapp:payment' food.id %}" class="btn btn-primary">Place Order</a>
+</div>

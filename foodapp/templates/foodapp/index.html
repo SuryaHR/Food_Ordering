@@ -31,7 +31,7 @@
           <li class="nav-item active">
             <a class="nav-link" id="nav-link" href="{% url 'foodapp:home'%}">Home <span class="sr-only">(current)</span></a>
           </li>
-          {% if user.is_authenticated %}
+          {% if request.session.is_login %}
             <li class="nav-item active ml-auto">
                 <a class="nav-link" id="nav-link" href="{% url 'logout'%}">Logout<span class="sr-only">(current)</span></a>
             </li>

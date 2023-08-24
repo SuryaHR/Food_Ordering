@@ -1,0 +1,110 @@
+<div class="payment-form">
+    <h2>Choose Payment Method</h2>
+    <form id="payment-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="food_id" value="{{ food.id }}">
+        
+        <label for="payment_method">Select Payment Method:</label>
+        <select name="payment_method" id="payment_method">
+            <option value="card">Credit/Debit Card</option>
+            <option value="upi">UPI</option>
+        </select>
+        
+        <div id="card_details" class="payment-method">
+            <!-- Credit/Debit Card Details Form -->
+            <div id="card-element"></div>
+                <label for="card_name">Cardholder's Name:</label>
+                <input type="text" id="card_name" name="card_name" required>
+            </div>
+            
+            <div id="card-number" class="card-input">
+                <label for="card_number">Card Number:</label>
+                <input type="text" class="input-field" id="cardNumber" placeholder="Card Number" required>
+            </div>
+            
+            <div id="card-expiry" class="card-input">
+                <label for="expiry">Expiry Date:</label>
+                <input type="text" class="input-field" id="cardExpiry" placeholder="MM / YY" required>
+            </div>
+            
+            <div id="card-cvc" class="card-input">
+                <label for="cvv">CVV:</label>
+                <input type="text" class="input-field" id="cardCvv" placeholder="CVV" required>
+            </div>
+        </div>
+        
+        <div id="upi_details" class="payment-method">
+            <!-- UPI Details Form -->
+            <label for="upi_id">UPI ID:</label>
+            <input type="text" name="upi_id" required>
+        </div>
+        
+        <a href="{% url 'foodapp:restaurant_list'%}">Pay</a>
+    </form>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('{{ settings.STRIPE_PUBLISHABLE_KEY }}');
+    var elements = stripe.elements();
+
+    var card = elements.create('card');
+    card.mount('#card-number');
+
+    var cardExpiry = elements.create('cardExpiry');
+    cardExpiry.mount('#card-expiry');
+
+    var cardCvc = elements.create('cardCvc');
+    cardCvc.mount('#card-cvc');
+
+    var form = document.getElementById('payment-form');
+    var submitButton = document.getElementById('submit-payment');
+    var errorElement = document.getElementById('card-errors');
+    var paymentMethodSelect = document.getElementById('payment_method');
+    var cardDetailsForm = document.getElementById('card_details');
+    var upiDetailsForm = document.getElementById('upi_details');
+
+    // Initially hide both payment method forms
+    cardDetailsForm.style.display = 'none';
+    upiDetailsForm.style.display = 'none';
+
+    paymentMethodSelect.addEventListener('change', function() {
+        const selectedMethod = paymentMethodSelect.value;
+        cardDetailsForm.style.display = selectedMethod === 'card' ? 'block' : 'none';
+        upiDetailsForm.style.display = selectedMethod === 'upi' ? 'block' : 'none';
+    });
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (paymentMethodSelect.value === 'card') {
+            // Use Stripe for card payment
+            stripe.createPaymentMethod({
+                type: 'card',
+                card: card,
+            }).then(function(result) {
+                if (result.error) {
+                    // Display error message to the user
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Payment method is created successfully
+                    // Include the payment method id in the form data
+                    var paymentMethodId = result.paymentMethod.id;
+                    var paymentMethodField = document.createElement('input');
+                    paymentMethodField.setAttribute('type', 'hidden');
+                    paymentMethodField.setAttribute('name', 'payment_method_id');
+                    paymentMethodField.setAttribute('value', paymentMethodId);
+                    form.appendChild(paymentMethodField);
+
+                    // Submit the form
+                    form.submit();
+                }
+            });
+        } else if (paymentMethodSelect.value === 'upi') {
+            // Directly create order for UPI payment
+            // Assuming payment processing is successful
+            // Create an order object
+            form.submit();
+        }
+    });
+</script>
