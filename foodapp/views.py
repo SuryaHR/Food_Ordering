@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import JsonResponse
 import stripe
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
@@ -125,7 +126,11 @@ def delete_restaurant(request, pk):
 def menu_list(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
     foods = Food.objects.filter(restaurant=restaurant)
-    return render(request, 'foodapp/menu_list.html', {'restaurant': restaurant, 'foods': foods})
+    return render(request, 'foodapp/menu_list.html', {
+        'restaurant': restaurant,
+        'foods': foods,
+        'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
+    })
 
 def food_detail(request, food_id):
     food = get_object_or_404(Food, pk=food_id)
@@ -203,38 +208,6 @@ def remove_from_cart(request, food_id):
 
     return redirect('foodapp:cart')
 
-def order_confirmation(request, food_id):
-    food = get_object_or_404(Food, pk=food_id)
-    return render(request, 'foodapp/order_confirmation.html', {'food': food})
-
-def payment(request, food_id):
-    food = get_object_or_404(Food, pk=food_id)
-
-    if request.method == 'POST':
-        try:
-            payment_method = request.POST.get('payment_method')
-            
-            if payment_method == 'card':
-                # Create a PaymentIntent on Stripe
-                intent = stripe.PaymentIntent.create(
-                    amount=int(food.price * 100),  # Amount in cents
-                    currency='usd',
-                )
-                client_secret = intent.client_secret
-                
-                return render(request, 'foodapp/payment.html', {'food': food, 'client_secret': client_secret})
-            
-            elif payment_method == 'upi':
-                # Assuming payment processing is successful
-                # Create an order object
-                order = Order.objects.create(food=food, restaurant=food.restaurant, user=request.user)
-                return redirect('foodapp:restaurant_list')
-            
-        except Exception as e:
-            return render(request, 'foodapp/payment.html', {'food': food, 'error': str(e)})
-
-    return render(request, 'foodapp/payment.html', {'food': food})
-
 def orders(request):
     if request.session.is_login: 
         if request.session.user_role == 'admin':
@@ -249,13 +222,27 @@ def orders(request):
 
     return render(request, 'foodapp/orders.html', {'orders': orders})
 
-
-def complete_order(request, order_id):
-    print("Fetching order details...")
-    order = get_object_or_404(Order, pk=order_id)
-    print("Fetched order:", order.id)
-    return render(request, 'foodapp/complete_order.html', {'order': order})
-
 def payment_success(request):
     return render(request, 'foodapp/payment_success.html')
 
+def create_checkout_session(request, food_id):
+    food = get_object_or_404(Food, pk=food_id)
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price_data': {
+                    'currency': 'inr',  # Change this to the appropriate currency
+                    'unit_amount_decimal': int(food.price * 100),  # Convert to cents
+                    'product_data': {
+                        'name': food.food_name,
+                    },
+                },
+                'quantity': 1,
+            },
+        ],
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('foodapp:payment_success')),
+        cancel_url=request.build_absolute_uri(reverse('foodapp:cart')),
+    )
+    return JsonResponse({'sessionId': session.id})

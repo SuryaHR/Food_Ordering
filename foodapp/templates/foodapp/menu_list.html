@@ -82,18 +82,47 @@
                         <img src="{{ food.food_image.url }}" alt="{{ food.food_name }}" style="margin-top: 40px; height: 100%;width: 100%;" class="menu-image">
                         <h3>{{ food.food_name }}</h3>
                         {% if request.session.is_login and request.session.user_role == 'user' %}
-                        <a href="{% url 'foodapp:add_to_cart' food.id %}" class="margin-top: 50px; btn btn-success">Add to Cart</a>
+                        <form method="post" action="{% url 'foodapp:add_to_cart' food.id %}">
+                            {% csrf_token %}
+                            <button class="add-to-cart-btn btn btn-success" data-food-id="{{ food.id }}">Add to Cart</button>
+                        </form>
                         {% endif %}
                         {% if request.session.is_login and request.session.user_role == 'admin' %}
                         <div class="col-mb-4 mb-4">
-                            <button class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal{{ food.id }}">Delete</button>
+                            <button class="btn btn-danger delete-button " data-toggle="modal" data-target="#deleteModal{{ food.id }}">Delete</button>
                         </div>
                         {% endif %} 
                         {% if request.session.is_login and request.session.user_role == 'user' %}
-                        <div class="col-mb-4 mb-4">
+                        {% comment %} <div class="col-mb-4 mb-4">
                             <a href="{% url 'foodapp:order_confirmation' food.id %}" class="btn btn-info">Order</a>
-                        </div>
+                        </div> {% endcomment %}
                         {% endif %}
+                        <br>
+                        {% if request.session.is_login and request.session.user_role == 'user' %}
+                        <button class="checkout-btn btn btn-primary" data-food-id="{{ food.id }}">Checkout</button>
+                        {% endif %}
+                        <script src="https://js.stripe.com/v3/"></script>
+                        <script>
+                            const stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY }}');
+                            const checkoutButtons = document.querySelectorAll(".checkout-btn");
+
+                            checkoutButtons.forEach(button => {
+                                button.addEventListener("click", async (event) => {
+                                    const foodId = event.target.getAttribute("data-food-id");
+                                    const response = await fetch("{% url 'foodapp:create_checkout_session' 0 %}".replace('0', foodId), {
+                                        method: "POST",
+                                        headers: { "X-CSRFToken": "{{ csrf_token }}" }
+                                    });
+                                    const session = await response.json();
+
+                                    // Redirect to Stripe Checkout
+                                    const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+                                    if (result.error) {
+                                        console.error(result.error.message);
+                                    }
+                                });
+                            });
+                        </script>
                         <br>
                         <br>
                     </div>
@@ -122,7 +151,6 @@
                         </div>
                     </div>
                 </div>
-
                 {% endfor %}
             </div>
         </div>
